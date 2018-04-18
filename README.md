@@ -65,7 +65,7 @@ The summary of the files and folders int repo is provided in the table below:
 
 ### README_udacity.md
 
-In the following link is the [udacity readme] https://github.com/Abhaycl/RoboND-Kinematics-1P2/blob/master/README_udacity.md , for this practice provides instructions on how to install and configure the environment.
+In the following link is the [udacity readme](https://github.com/Abhaycl/RoboND-Kinematics-1P2/blob/master/README_udacity.md), for this practice provides instructions on how to install and configure the environment.
 
 ---
 
