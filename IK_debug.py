@@ -91,30 +91,38 @@ def test_code(test_case):
           twist6:     0, length6:      0, offset7: 0.303, joint7:           0}
     
     # Definition of functions for homogeneous transformations
-    def HTF_Matrix(twist, length, offset, joint):
+    #def HTF_Matrix(twist, length, offset, joint):
+    def HTF_Matrix(joint, twist, length, offset):
         HTF = Matrix([[            cos(joint),            -sin(joint),           0,             length],
-                     [ sin(joint)*cos(twist), cos(joint1)*cos(twist), -sin(twist), -sin(twist)*offset],
-                     [ sin(joint)*sin(twist), cos(joint1)*sin(twist),  cos(twist),  cos(twist)*offset],
-                     [                     0,                      0,           0,                  1]])
+                      [ sin(joint)*cos(twist), cos(joint1)*cos(twist), -sin(twist), -sin(twist)*offset],
+                      [ sin(joint)*sin(twist), cos(joint1)*sin(twist),  cos(twist),  cos(twist)*offset],
+                      [                     0,                      0,           0,                  1]])
         return HTF
     
-    def Rot_z(y):
-        R_z = Matrix([[ cos(y), -sin(y), 0],
-                      [ sin(y),  cos(y), 0],
-                      [      0,       0, 1]])
-        return(R_z)
     
+    # Rotation (roll)
+    def Rot_x(r):
+        R_x = Matrix([[ 1,      0,       0],
+                      [ 0, cos(r), -sin(r)],
+                      [ 0, sin(r),  cos(r)]])
+        return(R_x)
+    
+    
+    # Rotation (pitch)
     def Rot_y(p):
         R_y = Matrix([[  cos(p), 0, sin(p)],
                       [       0, 1,      0],
                       [ -sin(p), 0, cos(p)]])
         return(R_y)
     
-    def Rot_x(r):
-        R_x = Matrix([[ 1,      0,       0],
-                      [ 0, cos(r), -sin(r)],
-                      [ 0, sin(r),  cos(r)]])
-        return(R_x)
+    
+    # Rotation (yaw)
+    def Rot_z(y):
+        R_z = Matrix([[ cos(y), -sin(y), 0],
+                      [ sin(y),  cos(y), 0],
+                      [      0,       0, 1]])
+        return(R_z)
+    
     
     # Generation of homogeneous transformations
     HT0_1 = HTF_Matrix(joint1, twist0, length0, offset1).subs(dh)
@@ -185,8 +193,8 @@ def test_code(test_case):
     r32 = R3_6[2, 1]
     r33 = R3_6[2, 2]
     
-    theta5 = (atan2(sqrt(r13**2 + r33**2), r23)).evalf()
     theta4 = (atan2(r33, -r13)).evalf()
+    theta5 = (atan2(sqrt(r13**2 + r33**2), r23)).evalf()
     theta6 = (atan2(-r22, r21)).evalf()
     ##
     ##
