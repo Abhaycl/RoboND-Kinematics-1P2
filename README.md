@@ -56,7 +56,7 @@ The summary of the files and folders int repo is provided in the table below:
 | kuka_arm/*                      | Folder that contains the kuka_arm package.                                                            |
 | misc_images/*                   | Folder containing the images of the project.                                                          |
 |                                 |                                                                                                       |
-| IK_debug.py                     |                                                                                                       |
+| IK_debug.py                     | File with the code to debug the project.                                                              |
 | README.md                       | Contains the project documentation.                                                                   |
 | README_udacity.md               | Is the udacity documentation that contains how to configure and install the environment.              |
 | writeup_template.md             | Contains an example of how the practice readme documentation should be completed.                     |
