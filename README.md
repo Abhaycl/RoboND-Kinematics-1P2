@@ -9,16 +9,12 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image1]: ./misc_images/kuka_sketch.png "Kuka KR210 Sketch"
 [image2]: ./misc_images/calculate_moveit.png "Calculate Moveit"
 [image3]: ./misc_images/urdf.png "URDF Coordinate System"
-[image4]: ./misc_images/color_thresholding.jpg "Color Thresholding"
-[image5]: ./misc_images/coordinate_transformations.jpg "Coordinate Transformations"
-[image6]: ./misc_images/test_dataset_video.jpg "Test Dataset Video"
-[image7]: ./misc_images/test_data_video.jpg "Test Data Video"
-[image8]: ./misc_images/simulator.jpg "Simulator Parameters"
-[image9]: ./misc/des1.jpg "Decision flow chart - Rocks"
-[image10]: ./misc/des2.jpg "Decision flow chart - Forward"
-[image11]: ./misc/des3.jpg "Decision flow chart - Stop"
-[image12]: ./misc/des4.jpg "Decision flow chart - Return"
-[image13]: ./misc/fidelity.jpg "Fidelity"
+[image4]: ./misc_images/angles1.png "Calculate Angles1"
+[image5]: ./misc_images/arctg.gif "Arc Tangente"
+[image6]: ./misc_images/ik_equations.png "IK Equations"
+[image7]: ./misc_images/arm_works1.png "Arm Works1"
+[image8]: ./misc_images/arm_works2.png "Arm Works2"
+[image9]: ./misc_images/error.png "Error"
 
 #### How build the project
 
@@ -160,14 +156,19 @@ First I have to find the position of the center of the wrist given the end-effec
 
 ![alt text][image3]
 
-
-
-
-The Inverse Position Kinematics were addressed in this snippet from the [IK_debug.py]:
+For that I've created a correctional rotation composed by a rotation on the Z axis of 180° (π) followed by a rotation on the Y axis of -90 (-π/2).
 
 ```python
             # Compensate for rotation discrepancy between DH parameters and Gazebo
             rot_corr = Rot_z.subs(y, pi) * Rot_y.subs(p, -pi/2)
+```
+
+Finally I've performed a translation on the opposite direction of the gripper link (that lays on the Z axis) to find the wrist center.
+
+Calculate the wrist center by applying a translation on the opposite direction of the gripper, from the DH parameter table we can find that the griper link offset (d7) is 0.303m.
+
+```python
+            # Calculating the Rotation Matrix for the Gripper
             rot_rpy = rot_rpy * rot_corr
             rot_rpy = rot_rpy.subs({'r': roll, 'p': pitch, 'y': yaw})
             #
@@ -178,3 +179,102 @@ The Inverse Position Kinematics were addressed in this snippet from the [IK_debu
             wy = py - (d_7 * rot_rpy[1,2])
             wz = pz - (d_7 * rot_rpy[2,2])
 ```
+
+Once the wrist center (WC) is known we can calculate the first joint angle with a simple arctangent.
+
+![alt text][image4]
+![alt text][image5]
+
+With the help of the Law of Cosines I've calculated the values for angles alpha and bet.
+
+![alt text][image6]
+
+```python
+            # Leveraging DH distances and offsets
+            d_1 = dh[d1]
+            d_4 = dh[d4]
+            a_1 = dh[a1]
+            a_2 = dh[a2]
+            a_3 = dh[a3]
+            
+            # For the evaluation of the angles we apply the law of cosine
+            # Calculating theta 1 to 3
+            r = sqrt(wx**2 + wy**2) - a_1
+            s = wz - d_1
+            
+            # Use of the cosine law
+            s_a = sqrt(a_3**2 + d_4**2)
+            s_b = sqrt(s**2 + r**2)
+            s_c = a_2
+            
+            alpha = acos((s_c**2 + s_b**2 - s_a**2) / (2 * s_c * s_b))
+            beta = acos((s_c**2 + s_a**2 - s_b**2) / (2 * s_c * s_a))
+            
+            theta1 = atan2(wy, wx)
+            theta2 = (pi/2) - alpha - atan2(s, r)
+            theta3 = (pi/2) - beta - atan2(-a_3, d_4)
+            
+            # Calculating Euler angles from orientation
+            # Calculating theta 4 to 6
+            R0_3 = HT0_1[0:3, 0:3] * HT1_2[0:3, 0:3] * HT2_3[0:3, 0:3]
+            R0_3 = R0_3.evalf(subs={'q1': theta1, 'q2': theta2, 'q3': theta3})
+            R3_6 = R0_3.HT * rot_rpy
+            
+            theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
+            # Choosing between multiple possible solutions:
+            if sin(theta5) < 0:
+                theta4 = atan2(-R3_6[2, 2],  R3_6[0, 2])
+                theta6 = atan2( R3_6[1, 1], -R3_6[1, 0])
+            else:
+                theta4 = atan2( R3_6[2, 2], -R3_6[0, 2])
+                theta6 = atan2(-R3_6[1, 1],  R3_6[1, 0])
+```
+
+### Project Implementation
+
+#### 1. Fill in the `IK_server.py` file with properly commented python code for calculating Inverse Kinematics based on previously performed Kinematic Analysis. Your code must guide the robot to successfully complete 8/10 pick and place cycles. Briefly discuss the code you implemented and your results.
+
+In order to obtain the transformation and rotation matrices, I decided to utilize functions to generate all of the different matrices. This is shown in the [IK_server.py] snippet below.
+
+```python
+# Definition of the homogeneous transformation matrix
+def HTF_Matrix(alpha, a, d, q):
+    HTF = Matrix([[            cos(q),           -sin(q),           0,             a],
+                  [ sin(q)*cos(alpha), cos(q)*cos(alpha), -sin(alpha), -sin(alpha)*d],
+                  [ sin(q)*sin(alpha), cos(q)*sin(alpha),  cos(alpha),  cos(alpha)*d],
+                  [                 0,                 0,           0,             1]])
+    return HTF
+
+# Definition of the functions for the homogeneous transformation matrices of the rotations around x, y, z passing a specific angle
+# Rotation (roll)
+def Rot_x(r):
+    r_x = Matrix([[ 1,      0,       0],
+                  [ 0, cos(r), -sin(r)],
+                  [ 0, sin(r),  cos(r)]])
+    return(r_x)
+
+# Rotation (pitch)
+def Rot_y(p):
+    r_y = Matrix([[  cos(p), 0, sin(p)],
+                  [       0, 1,      0],
+                  [ -sin(p), 0, cos(p)]])
+    return(r_y)
+
+# Rotation (yaw)
+def Rot_z(y):
+    r_z = Matrix([[ cos(y), -sin(y), 0],
+                  [ sin(y),  cos(y), 0],
+                  [      0,       0, 1]])
+    return(r_z)
+```
+
+These allowed the code to easily create the many transformation and rotation matrices by calling the functions, while still being outside of the handle_calculate_IK function. Another advantage was to generate all the transformation and rotation matrices outside the forloop to prevent them being generated constantly which would decrease performance and effectiveness. Further, I tried to leverage the DH parameters as much as possible given that they were already created and stored.
+
+Possibly, due to computer performance, it was rather slow still and while I tried implementing a class structure to the code.
+
+![alt text][image7]
+![alt text][image8]
+
+### Observations, possible improvements, things used
+
+While debugging the code many times (long times due to slow performance), I noticed that the code does not respond well when the planned path is relatively abnormal and navitates far away to grab a can or to move towards the bucket. Not sure why this happens but when normal trajectories are given the code performs well. Not sure if it'll require calibration or more statements to make it smarter and discern the correct path to take on that kind of situation.
