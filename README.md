@@ -1,6 +1,8 @@
 # Kinematics Project Starter Code
 
 The objective of this project is to program the robotic arm to pick up an element and place it in a defined place, using tools such as Gazebo and RViz.
+
+---
 <!--more-->
 
 [//]: # (Image References)
