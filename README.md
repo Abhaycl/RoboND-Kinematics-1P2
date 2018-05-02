@@ -17,6 +17,9 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image7]: ./misc_images/arm_works1.png "Arm Works1"
 [image8]: ./misc_images/arm_works2.png "Arm Works2"
 [image9]: ./misc_images/error.png "Error"
+[image10]: ./misc_images/kuka_kr210.png "Kuka Kr210"
+[image11]: ./misc_images/paralelo.png "Parallel"
+[image12]: ./misc_images/perpendicular.png "Perpendicular"
 
 #### How build the project
 
@@ -88,17 +91,31 @@ In the following link is the [udacity readme](https://github.com/Abhaycl/RoboND-
 
 You're reading it!
 
+---
+Some of the features of the Kuka Kr210 robotic arm that we are going to use are shown in the following image:
+
+![alt text][image10]
+
+![alt text][image0]
+###### **Image**  **1** : Model represented by the foward_kinematics.launch file
+
 ### Kinematic Analysis
 #### 1. Run the forward_kinematics demo and evaluate the kr210.urdf.xacro file to perform kinematic analysis of Kuka KR210 robot and derive its DH parameters.
 
 I get help from Lesson 2 and the project module to use the file forward_kinematics.launch to generate the kinematic sketch (image 2). The kr210.urdf.xacro file contains all the robot specific information like link lengths, joint offsets, actuators, etc. and it's necessary to derive DH parameters and create transform matrices.
 
-![alt text][image0]
-
-###### **Image**  **1** : Model represented by the foward_kinematics.launch file
-
 ![alt text][image1]
 ###### **Image**  **2** : Sketch to display links with offsets, lengths, and joint axes.
+
+We get the twist angles:
+
+Z0 | ![alt text][image11] | Z1 | --> | a0 = 0
+Z1 | ![alt text][image11] | Z2 | --> | a1 = -90
+Z2 | ![alt text][image11] | Z3 | --> | a2 = 0
+Z3 | ![alt text][image11] | Z4 | --> | a3 = -90
+Z4 | ![alt text][image11] | Z5 | --> | a4 = 90
+Z5 | ![alt text][image11] | Z6 | --> | a5 = -90
+Z6 | ![alt text][image11] | ZG | --> | a6 = 0
 
 Joint 1
 * a0 = 0, since this is the base link.
