@@ -24,14 +24,15 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image14]: ./misc_images/formula2.png ""
 [image15]: ./misc_images/formula3.png ""
 [image16]: ./misc_images/formula4.png ""
-[image17]: ./misc_images/Rx.png "Rx"
-[image18]: ./misc_images/Dx.png "Dx"
-[image19]: ./misc_images/Rz.png "Rz"
-[image20]: ./misc_images/Oi.png "Oi"
-[image21]: ./misc_images/Dz.png "Dz"
-[image22]: ./misc_images/Di.png "Di"
-[image23]: ./misc_images/a.png "a"
-[image24]: ./misc_images/O.png "O"
+[image17]: ./misc_images/formula5.png ""
+[image18]: ./misc_images/Rx.png "Rx"
+[image19]: ./misc_images/Dx.png "Dx"
+[image20]: ./misc_images/Rz.png "Rz"
+[image21]: ./misc_images/Oi.png "Oi"
+[image22]: ./misc_images/Dz.png "Dz"
+[image23]: ./misc_images/Di.png "Di"
+[image24]: ./misc_images/a.png "a"
+[image25]: ./misc_images/O.png "O"
 
 
 #### How build the project
@@ -167,7 +168,7 @@ Given the HR data we will apply the following operations:
 
 ![alt text][image13]
 
-In which ![alt text][image17] is a rotation matrix about the X axis by ![alt text][image18] is translation matrix along the X axis by ![alt text][image19] is a rotation matrix about the Z axis by ![alt text][image20], ![alt text][image21] is translation matrix along the Z axis by ![alt text][image22] and ![alt text][image23], a, ![alt text][image24] and d are D-H parameters of the robot. So we have:
+In which ![alt text][image18] is a rotation matrix about the X axis by ![alt text][image19] is translation matrix along the X axis by ![alt text][image20] is a rotation matrix about the Z axis by ![alt text][image21], ![alt text][image22] is translation matrix along the Z axis by ![alt text][image23] and ![alt text][image24], a, ![alt text][image25] and d are D-H parameters of the robot. So we have:
 
 ![alt text][image14]
 
@@ -175,6 +176,7 @@ In which ![alt text][image17] is a rotation matrix about the X axis by ![alt tex
 
 ![alt text][image16]
 
+![alt text][image17]
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
