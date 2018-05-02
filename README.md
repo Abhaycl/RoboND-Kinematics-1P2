@@ -33,7 +33,7 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image23]: ./misc_images/Di.png "Di"
 [image24]: ./misc_images/a.png "a"
 [image25]: ./misc_images/O.png "O"
-
+[image26]: ./misc_images/formula6.png ""
 
 #### How build the project
 
@@ -177,6 +177,16 @@ In which ![alt text][image18] is a rotation matrix about the X axis by ![alt tex
 ![alt text][image16]
 
 ![alt text][image17]
+
+The homogeneous transform for the DH coordinates system from joint i-1 to i is:
+
+Let HT_i-1, i =
+
+![alt text][image26]
+
+Hence, the following matrix multiplication computes the final transformation matrix that gives the position and orientation of the robot’s end effector relative to its base.
+
+HT0_G = HT0_1 * HT1_2 * HT2_3 * HT3_4 * HT4_5 * HT5_6 * HT6_G
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
 
