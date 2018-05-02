@@ -109,13 +109,13 @@ I get help from Lesson 2 and the project module to use the file forward_kinemati
 
 We get the twist angles:
 
-Z0 | ![alt text][image11] | Z1 | --> | a0 = 0
-Z1 | ![alt text][image11] | Z2 | --> | a1 = -90
-Z2 | ![alt text][image11] | Z3 | --> | a2 = 0
-Z3 | ![alt text][image11] | Z4 | --> | a3 = -90
-Z4 | ![alt text][image11] | Z5 | --> | a4 = 90
-Z5 | ![alt text][image11] | Z6 | --> | a5 = -90
-Z6 | ![alt text][image11] | ZG | --> | a6 = 0
+Z0 | ![alt text][image11] | Z1 | --> | a0 = 0   |
+Z1 | ![alt text][image12] | Z2 | --> | a1 = -90 |
+Z2 | ![alt text][image11] | Z3 | --> | a2 = 0   |
+Z3 | ![alt text][image12] | Z4 | --> | a3 = -90 |
+Z4 | ![alt text][image12] | Z5 | --> | a4 = 90  |
+Z5 | ![alt text][image12] | Z6 | --> | a5 = -90 |
+Z6 | ![alt text][image11] | ZG | --> | a6 = 0   |
 
 Joint 1
 * a0 = 0, since this is the base link.
