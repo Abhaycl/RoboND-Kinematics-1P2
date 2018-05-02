@@ -107,7 +107,9 @@ You're reading it!
 ---
 Some of the features of the Kuka Kr210 robotic arm that we are going to use are shown in the following image:
 
+<p align="center">
 ![alt text][image10]
+</p>
 
 ![alt text][image0]
 ###### **Image**  **1** : Model represented by the foward_kinematics.launch file
