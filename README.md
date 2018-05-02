@@ -148,9 +148,9 @@ I get the following data from the file kr210.urdf.xacro
 
 Where the following values are deducted:
 
-> 0->1 ;  0.33 + 0.42 = 0.75
-> 3->4 ;  0.96 + 0.54 = 1.5
-> 6->G ; 0.193 + 0.11 = 0.303
+* 0->1 ;  0.33 + 0.42 = 0.75
+* 3->4 ;  0.96 + 0.54 = 1.5
+* 6->G ; 0.193 + 0.11 = 0.303
 
 Using the kr210.urdf.xacro file the below DH Parameter table was generated. Values were obtained by looking for the joints section in the xacro file; there using the sketch from image 2 distances from joint to joint were obtained and used as a(i-1) and d(i) values repective to their axis as provided in the Figure. Some values, like d(G) might need to obtained by the sum of multiple joint x, y, z values, in this case, the x value of joint 6 and the x value of the gripper joint.
 
@@ -159,7 +159,7 @@ Links | alpha(i-1) | a(i-1) | d(i) | theta(i)
 0->1 | 0 | 0 | 0.75 | q1
 1->2 | - pi/2 | 0.35 | 0 | -pi/2 + q2
 2->3 | 0 | 1.25 | 0 | q3
-3->4 | - pi/2 | 0.0536 | 1.5014 | q4
+3->4 | - pi/2 | -0.054 | 1.5 | q4
 4->5 |   pi/2 | 0 | 0 | q5
 5->6 | - pi/2 | 0 | 0 | q6
 6->G | 0 | 0 | 0.303 | 0
