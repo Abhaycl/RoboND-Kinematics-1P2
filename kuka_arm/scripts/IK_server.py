@@ -196,12 +196,12 @@ def handle_calculate_IK(req):
             # Side C
             C = a_2 # C = 1.25
             
-            # Angle a
+            # Angle a (alpha)
             a = acos((C**2 + B**2 - A**2) / (2 * C * B))
             # Calculating theta 2
             theta2 = (pi/2) - a - atan2((wz - d_1), r)
-            # Angle b
-            beta = acos((C**2 + A**2 - B**2) / (2 * C * A))
+            # Angle b (beta)
+            b = acos((C**2 + A**2 - B**2) / (2 * C * A))
             # Calculating theta 3
             theta3 = (pi/2) - beta - atan2(-a_3, d_4)
             
@@ -216,6 +216,7 @@ def handle_calculate_IK(req):
             # Calculating theta 5
             theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
             # Calculating theta 6
+			theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
             
             #theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
             ## Choosing between multiple possible solutions:
