@@ -208,15 +208,15 @@ def handle_calculate_IK(req):
             # Calculating Euler angles from orientation
             R0_3 = HT0_1[0:3, 0:3] * HT1_2[0:3, 0:3] * HT2_3[0:3, 0:3]
             R0_3 = R0_3.evalf(subs={'q1': theta1, 'q2': theta2, 'q3': theta3})
-            # R3_6 = R0_3.inv("LU")*Rrpy # Calculate inverse of R0_3:
-            R3_6 = R0_3.HT * rot_rpy
+            # Calculate inverse of R0_3
+            R3_6 = R0_3.inv("LU") * Rrpy
             
             # Calculating theta 4
             theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
             # Calculating theta 5
             theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
             # Calculating theta 6
-			theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
+            theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
             
             #theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
             ## Choosing between multiple possible solutions:
