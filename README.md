@@ -34,6 +34,10 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image24]: ./misc_images/a.png "a"
 [image25]: ./misc_images/O.png "O"
 [image26]: ./misc_images/formula6.png ""
+[image27]: ./misc_images/ik_equations1.png "IK Equations1"
+[image28]: ./misc_images/ik_equations2.png "IK Equations2"
+[image29]: ./misc_images/ik_equations3.png "IK Equations3"
+[image30]: ./misc_images/ik_equations4.png "IK Equations4"
 
 #### How build the project
 
@@ -164,7 +168,7 @@ Links | alpha(i-1) | a(i-1) | d(i) | theta(i)
 5->6 | - pi/2 | 0 | 0 | q6
 6->G | 0 | 0 | 0.303 | 0
 
-Given the HR data we will apply the following operations:
+Given the DH data we will apply the following operations:
 
 ![alt text][image13]
 
@@ -189,6 +193,8 @@ Hence, the following matrix multiplication computes the final transformation mat
 HT0_G = HT0_1 * HT1_2 * HT2_3 * HT3_4 * HT4_5 * HT5_6 * HT6_G
 
 #### 3. Decouple Inverse Kinematics problem into Inverse Position Kinematics and inverse Orientation Kinematics; doing so derive the equations to calculate all individual joint angles.
+
+Inverse kinematics problem of a robot manipulator is finding the joint angles of the robot by having the position and orientation of the end effector of the robot. Inverse kinematics problem of a serial manipulator is more important than the forward kinematics, as it is essential to move the gripper of the robot to a required position with a defined orientation in order to, for instance, grab an object in that position and orientation.
 
 Ok, now that I have the forward kinematics modeled it is time to tackle the real problem: calculate all joint angles for a trajectory, defined as an array of poses, calculated by MoveIt.
 
@@ -216,13 +222,22 @@ Finally I've performed a translation on the opposite direction of the gripper li
 Calculate the wrist center by applying a translation on the opposite direction of the gripper, from the DH parameter table we can find that the griper link offset (d7) is 0.303m.
 
 ```python
-            # Calculating the Rotation Matrix for the Gripper
+            ### Your IK code here
+            # Compensate for rotation discrepancy between DH parameters and Gazebo
+            rot_corr = Rot_z.subs(y, pi) * Rot_y.subs(p, -pi/2)
             rot_rpy = rot_rpy * rot_corr
             rot_rpy = rot_rpy.subs({'r': roll, 'p': pitch, 'y': yaw})
             #
             #
+            # Leveraging DH distances and offsets
+            d_1 = dh[d1] # d1 = 0.75
+            d_4 = dh[d4] # d4 = 1.5
+            d_7 = dh[d7] # d7 = 0.303
+            a_1 = dh[a1] # a1 = 0.35
+            a_2 = dh[a2] # a2 = 1.25
+            a_3 = dh[a3] # a3 = -0.054
+            
             # Calculate joint angles using Geometric IK method
-            d_7 = dh[d7]
             wx = px - (d_7 * rot_rpy[0,2])
             wy = py - (d_7 * rot_rpy[1,2])
             wz = pz - (d_7 * rot_rpy[2,2])
@@ -231,51 +246,60 @@ Calculate the wrist center by applying a translation on the opposite direction o
 Once the wrist center (WC) is known we can calculate the first joint angle with a simple arctangent.
 
 ![alt text][image4]
+
 ![alt text][image5]
+
+Where: s = wz - d_1
 
 With the help of the Law of Cosines I've calculated the values for angles alpha and bet.
 
 ![alt text][image6]
 
+![alt text][image27]
+
+![alt text][image28]
+
+![alt text][image29]
+
+![alt text][image30]
+
 ```python
-            # Leveraging DH distances and offsets
-            d_1 = dh[d1]
-            d_4 = dh[d4]
-            a_1 = dh[a1]
-            a_2 = dh[a2]
-            a_3 = dh[a3]
+            # Calculating theta 1
+            theta1 = atan2(wy, wx)
             
             # For the evaluation of the angles we apply the law of cosine
-            # Calculating theta 1 to 3
+            # Calculating radius
             r = sqrt(wx**2 + wy**2) - a_1
-            s = wz - d_1
             
-            # Use of the cosine law
-            s_a = sqrt(a_3**2 + d_4**2)
-            s_b = sqrt(s**2 + r**2)
-            s_c = a_2
+            # Use of the cosine law to calculate theta2 theta3 using A, B, C sides of the triangle
+            # Side A
+            A = sqrt(a_3**2 + d_4**2) # A = 1.50097
+            # Side B
+            B = sqrt((wz - d_1)**2 + r**2)
+            # Side C
+            C = a_2 # C = 1.25
             
-            alpha = acos((s_c**2 + s_b**2 - s_a**2) / (2 * s_c * s_b))
-            beta = acos((s_c**2 + s_a**2 - s_b**2) / (2 * s_c * s_a))
-            
-            theta1 = atan2(wy, wx)
-            theta2 = (pi/2) - alpha - atan2(s, r)
+            # Angle a (alpha)
+            a = acos((C**2 + B**2 - A**2) / (2 * C * B))
+            # Calculating theta 2
+            theta2 = (pi/2) - a - atan2((wz - d_1), r)
+            # Angle b (beta)
+            b = acos((C**2 + A**2 - B**2) / (2 * C * A))
+            # Calculating theta 3
             theta3 = (pi/2) - beta - atan2(-a_3, d_4)
             
             # Calculating Euler angles from orientation
-            # Calculating theta 4 to 6
             R0_3 = HT0_1[0:3, 0:3] * HT1_2[0:3, 0:3] * HT2_3[0:3, 0:3]
             R0_3 = R0_3.evalf(subs={'q1': theta1, 'q2': theta2, 'q3': theta3})
+            # R3_6 = R0_3.inv("LU")*Rrpy # Calculate inverse of R0_3:
             R3_6 = R0_3.HT * rot_rpy
             
+            # Calculating theta 4
+            theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
+            # Calculating theta 5
             theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
-            # Choosing between multiple possible solutions:
-            if sin(theta5) < 0:
-                theta4 = atan2(-R3_6[2, 2],  R3_6[0, 2])
-                theta6 = atan2( R3_6[1, 1], -R3_6[1, 0])
-            else:
-                theta4 = atan2( R3_6[2, 2], -R3_6[0, 2])
-                theta6 = atan2(-R3_6[1, 1],  R3_6[1, 0])
+            # Calculating theta 6
+			theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
 ```
 
 ### Project Implementation
