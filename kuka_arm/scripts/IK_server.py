@@ -189,15 +189,20 @@ def handle_calculate_IK(req):
             r = sqrt(wx**2 + wy**2) - a_1
             
             # Use of the cosine law to calculate theta2 theta3 using A, B, C sides of the triangle
+            # Side A
             A = sqrt(a_3**2 + d_4**2) # A = 1.50097
+            # Side B
             B = sqrt((wz - d_1)**2 + r**2)
+            # Side C
             C = a_2 # C = 1.25
             
+            # Angle a
+            a = acos((C**2 + B**2 - A**2) / (2 * C * B))
             # Calculating theta 2
-            alpha = acos((C**2 + B**2 - A**2) / (2 * C * B))
-            theta2 = (pi/2) - alpha - atan2((wz - d_1), r)
-            # Calculating theta 3
+            theta2 = (pi/2) - a - atan2((wz - d_1), r)
+            # Angle b
             beta = acos((C**2 + A**2 - B**2) / (2 * C * A))
+            # Calculating theta 3
             theta3 = (pi/2) - beta - atan2(-a_3, d_4)
             
             # Calculating Euler angles from orientation
