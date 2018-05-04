@@ -275,6 +275,7 @@ With the help of the Law of Cosines I've calculated the values for angles alpha 
             # For the evaluation of the angles we apply the law of cosine
             # Calculating radius
             r = sqrt(wx**2 + wy**2) - a_1
+            #s = wz - d_1
             
             # Use of the cosine law to calculate theta2 theta3 using A, B, C sides of the triangle
             # Side A
@@ -291,20 +292,20 @@ With the help of the Law of Cosines I've calculated the values for angles alpha 
             # Angle b (beta)
             b = acos((C**2 + A**2 - B**2) / (2 * C * A))
             # Calculating theta 3
-            theta3 = (pi/2) - beta - atan2(-a_3, d_4)
+            theta3 = (pi/2) - b - atan2(-a_3, d_4)
             
             # Calculating Euler angles from orientation
             R0_3 = HT0_1[0:3, 0:3] * HT1_2[0:3, 0:3] * HT2_3[0:3, 0:3]
             R0_3 = R0_3.evalf(subs={'q1': theta1, 'q2': theta2, 'q3': theta3})
-            # R3_6 = R0_3.inv("LU")*Rrpy # Calculate inverse of R0_3:
-            R3_6 = R0_3.HT * rot_rpy
+            # Calculate inverse of R0_3
+            R3_6 = R0_3.inv("LU") * rot_rpy
             
             # Calculating theta 4
             theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
             # Calculating theta 5
             theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
             # Calculating theta 6
-			theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
+            theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
 ```
 
 ### Project Implementation
