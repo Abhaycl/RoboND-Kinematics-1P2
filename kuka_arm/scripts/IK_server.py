@@ -58,15 +58,15 @@ def handle_calculate_IK(req):
         ### Your FK code here
         # Create symbols
         # Joint angle variables
-        q1, q2, q3, q4, q5, q6, q7 = symbols('q1:8')
+        q1, q2, q3, q4, q5, q6, q7 = symbols("q1:8")
         # Link displacement variables
-        d1, d2, d3, d4, d5, d6, d7 = symbols('d1:8')
+        d1, d2, d3, d4, d5, d6, d7 = symbols("d1:8")
         # Link length variables
-        a0, a1, a2, a3, a4, a5, a6 = symbols('a0:7')
+        a0, a1, a2, a3, a4, a5, a6 = symbols("a0:7")
         # Twist angle variables
-        alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols('alpha0:7')
+        alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols("alpha0:7")
         # r: roll, p: pitch, y: yaw
-        r, p, y = symbols('r p y')
+        r, p, y = symbols("r p y")
         #
         #
         # Create Modified DH parameters
@@ -82,13 +82,7 @@ def handle_calculate_IK(req):
         #
         # Define Modified DH Transformation matrix
         #
-        # Definition of the homogeneous transformation matrix
-        def HTF_Matrix(alpha, a, d, q):
-            HTF = Matrix([[            cos(q),           -sin(q),           0,             a],
-                          [ sin(q)*cos(alpha), cos(q)*cos(alpha), -sin(alpha), -sin(alpha)*d],
-                          [ sin(q)*sin(alpha), cos(q)*sin(alpha),  cos(alpha),  cos(alpha)*d],
-                          [                 0,                 0,           0,             1]])
-            return HTF
+        # Defined at the beginning
         #
         # Create individual transformation matrices
         # Base_link to Link1
@@ -97,6 +91,7 @@ def handle_calculate_IK(req):
                         [ sin(q1)*sin(alpha0), cos(q1)*sin(alpha0),  cos(alpha0),  cos(alpha0)*d1],
                         [                  0,                    0,            0,               1]])
         HT0_1 = HT0_1.subs(dh)
+        #print("HT0_1 = ", HT0_1)
         
         # Link1 to Link2
         HT1_2 = Matrix([[             cos(q2),            -sin(q2),            0,              a1],
@@ -104,6 +99,7 @@ def handle_calculate_IK(req):
                         [ sin(q2)*sin(alpha1), cos(q2)*sin(alpha1),  cos(alpha1),  cos(alpha1)*d2],
                         [                  0,                    0,            0,               1]])
         HT1_2 = HT1_2.subs(dh)
+        #print("HT1_2 = ", HT1_2)
         
         # Link2 to Link3
         HT2_3 = Matrix([[             cos(q3),            -sin(q3),            0,              a2],
@@ -111,6 +107,7 @@ def handle_calculate_IK(req):
                         [ sin(q3)*sin(alpha2), cos(q3)*sin(alpha2),  cos(alpha2),  cos(alpha2)*d3],
                         [                  0,                    0,            0,               1]])
         HT2_3 = HT2_3.subs(dh)
+        #print("HT2_3 = ", HT2_3)
         
         # Link3 to Link4
         HT3_4 = Matrix([[             cos(q4),            -sin(q4),            0,              a3],
@@ -118,6 +115,7 @@ def handle_calculate_IK(req):
                         [ sin(q4)*sin(alpha3), cos(q4)*sin(alpha3),  cos(alpha3),  cos(alpha3)*d4],
                         [                  0,                    0,            0,               1]])
         HT3_4 = HT3_4.subs(dh)
+        #print("HT3_4 = ", HT3_4)
         
         # Link4 to Link5
         HT4_5 = Matrix([[             cos(q5),            -sin(q5),            0,              a4],
@@ -125,6 +123,7 @@ def handle_calculate_IK(req):
                         [ sin(q5)*sin(alpha4), cos(q5)*sin(alpha4),  cos(alpha4),  cos(alpha4)*d5],
                         [                  0,                    0,            0,               1]])
         HT4_5 = HT4_5.subs(dh)
+        #print("HT4_5 = ", HT4_5)
         
         # Link5 to Link6
         HT5_6 = Matrix([[             cos(q6),            -sin(q6),            0,              a5],
@@ -132,6 +131,7 @@ def handle_calculate_IK(req):
                         [ sin(q6)*sin(alpha5), cos(q6)*sin(alpha5),  cos(alpha5),  cos(alpha5)*d6],
                         [                  0,                    0,            0,               1]])
         HT5_6 = HT5_6.subs(dh)
+        #print("HT5_6 = ", HT5_6)
         
         # Link6 to Gripper_link
         HT6_G = Matrix([[             cos(q7),            -sin(q7),            0,              a6],
@@ -139,6 +139,7 @@ def handle_calculate_IK(req):
                         [ sin(q7)*sin(alpha6), cos(q7)*sin(alpha6),  cos(alpha6),  cos(alpha6)*d7],
                         [                  0,                    0,            0,               1]])
         HT6_G = HT6_G.subs(dh)
+        #print("HT6_G = ", HT6_G)
         
         # Matrix of the transformations
         HT0_G = HT0_1 * HT1_2 * HT2_3 * HT3_4 * HT4_5 * HT5_6 * HT6_G
