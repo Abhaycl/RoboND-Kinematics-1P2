@@ -38,6 +38,11 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image28]: ./misc_images/ik_equations2.png "IK Equations2"
 [image29]: ./misc_images/ik_equations3.png "IK Equations3"
 [image30]: ./misc_images/ik_equations4.png "IK Equations4"
+[image31]: ./misc_images/img1.png "10 object image"
+[image32]: ./misc_images/img2.png "10 object image"
+[image33]: ./misc_images/img3.png "10 object image"
+[image34]: ./misc_images/img4.png "10 object image"
+[image35]: ./misc_images/img5.png "10 object image"
 
 #### How build the project
 
@@ -352,6 +357,14 @@ Possibly, due to computer performance, it was rather slow still and while I trie
 
 ![alt text][image7]
 ![alt text][image8]
+
+#### Collection of 10 items
+
+![alt text][image31]
+![alt text][image32]
+![alt text][image33]
+![alt text][image34]
+![alt text][image35]
 
 ### Observations, possible improvements, things used
 
