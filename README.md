@@ -12,7 +12,7 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image2]: ./misc_images/calculate_moveit.png "Calculate Moveit"
 [image3]: ./misc_images/urdf.png "URDF Coordinate System"
 [image4]: ./misc_images/angles1.png "Calculate Angles1"
-[image5]: ./misc_images/arctg.gif "Arc Tangente"
+[image5]: ./misc_images/for1.gif "Theta 1"
 [image6]: ./misc_images/ik_equations.png "IK Equations"
 [image7]: ./misc_images/arm_works1.png "Arm Works1"
 [image8]: ./misc_images/arm_works2.png "Arm Works2"
@@ -38,6 +38,9 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image28]: ./misc_images/ik_equations2.png "IK Equations2"
 [image29]: ./misc_images/ik_equations3.png "IK Equations3"
 [image30]: ./misc_images/ik_equations4.png "IK Equations4"
+[image31]: ./misc_images/for2.gif "Theta 2"
+[image32]: ./misc_images/for3.gif "radio"
+[image33]: ./misc_images/for4.gif "s"
 
 #### How build the project
 
@@ -247,7 +250,21 @@ Once the wrist center (WC) is known we can calculate the first joint angle with 
 
 ![alt text][image4]
 
+The point zc could be considered to be the wrist center of a spherical wrist. We will assume that the Cartesian coordinates of zc have already been calculated. To find 𝜃1, we need to project zc onto the ground plane - a trivial task since it only requires setting the z-coordinate = 0! Thus,
+
 ![alt text][image5]
+
+To solve for 𝜃2, imagine 𝜃1 = 0 and project links 2 and 3 onto the the x-z plane. Again, we use the atan2 function,
+
+![alt text][image31]
+
+where,
+
+![alt text][image32]
+
+and,
+
+![alt text][image33]
 
 Where: s = wz - d_1
 
