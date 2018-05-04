@@ -72,24 +72,25 @@ def test_code(test_case):
     
     # Create symbols
     # Joint angle variables
-    q1, q2, q3, q4, q5, q6, q7 = symbols('q1:8')
+    q1, q2, q3, q4, q5, q6, q7 = symbols("q1:8")
     # Link displacement variables
-    d1, d2, d3, d4, d5, d6, d7 = symbols('d1:8')
+    d1, d2, d3, d4, d5, d6, d7 = symbols("d1:8")
     # Link length variables
-    a0, a1, a2, a3, a4, a5, a6 = symbols('a0:7')
+    a0, a1, a2, a3, a4, a5, a6 = symbols("a0:7")
     # Twist angle variables
-    alpha0,alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols('alpha0:7')
+    alpha0, alpha1, alpha2, alpha3, alpha4, alpha5, alpha6 = symbols("alpha0:7")
     # r: roll, p: pitch, y: yaw
-    r, p, y = symbols('r p y')
+    r, p, y = symbols("r p y")
     
     # DH parameterization for the KUKA KR210
-    dh = {alpha0:     0, a0:      0, d1:   0.75, q1:      q1,
-          alpha1: -pi/2, a1:   0.35, d2:      0, q2: q2-pi/2,
-          alpha2:     0, a2:   1.25, d3:      0, q3:      q3,
-          alpha3: -pi/2, a3: 0.0536, d4: 1.5014, q4:      q4,
-          alpha4:  pi/2, a4:      0, d5:      0, q5:      q5,
-          alpha5: -pi/2, a5:      0, d6:      0, q6:      q6,
-          alpha6:     0, a6:      0, d7:  0.303, q7:       0}
+    # KUKA KR210
+    dh = {alpha0:     0, a0:      0, d1:  0.75, q1:      q1,
+          alpha1: -pi/2, a1:   0.35, d2:     0, q2: q2-pi/2,
+          alpha2:     0, a2:   1.25, d3:     0, q3:      q3,
+          alpha3: -pi/2, a3: -0.054, d4:  1.50, q4:      q4,
+          alpha4:  pi/2, a4:      0, d5:     0, q5:      q5,
+          alpha5: -pi/2, a5:      0, d6:     0, q6:      q6,
+          alpha6:     0, a6:      0, d7: 0.303, q7:       0}
     
     # Definition of the homogeneous transformation matrix
     def HTF_Matrix(alpha, a, d, q):
@@ -147,50 +148,57 @@ def test_code(test_case):
     rot_rpy = rot_rpy * rot_corr
     rot_rpy = rot_rpy.subs({'r': roll, 'p': pitch, 'y': yaw})
     
-    # With the geometric IK method the joint angles are calculated
-    d_7 = dh[d7]
+    # Leveraging DH distances and offsets
+    d_1 = dh[d1] # d1 = 0.75
+    d_4 = dh[d4] # d4 = 1.5
+    d_7 = dh[d7] # d7 = 0.303
+    a_1 = dh[a1] # a1 = 0.35
+    a_2 = dh[a2] # a2 = 1.25
+    a_3 = dh[a3] # a3 = -0.054
+    
+    # Calculate joint angles using Geometric IK method
     wx = px - (d_7 * rot_rpy[0,2])
     wy = py - (d_7 * rot_rpy[1,2])
     wz = pz - (d_7 * rot_rpy[2,2])
     
-    # Leveraging DH distances and offsets
-    d_1 = dh[d1]
-    d_4 = dh[d4]
-    a_1 = dh[a1]
-    a_2 = dh[a2]
-    a_3 = dh[a3]
+    # Calculating theta 1
+    theta1 = atan2(wy, wx)
     
     # For the evaluation of the angles we apply the law of cosine
-    # Calculating theta 1 to 3
+    # Calculating radius
     r = sqrt(wx**2 + wy**2) - a_1
-    s = wz - d_1
+    #s = wz - d_1
     
-    # Use of the cosine law
-    s_a = sqrt(a_3**2 + d_4**2)
-    s_b = sqrt(s**2 + r**2)
-    s_c = a_2
+    # Use of the cosine law to calculate theta2 theta3 using A, B, C sides of the triangle
+    # Side A
+    A = sqrt(a_3**2 + d_4**2) # A = 1.50097
+    # Side B
+    B = sqrt((wz - d_1)**2 + r**2)
+    # Side C
+    C = a_2 # C = 1.25
     
-    alpha = acos((s_c**2 + s_b**2 - s_a**2) / (2 * s_c * s_b))
-    beta = acos((s_c**2 + s_a**2 - s_b**2) / (2 * s_c * s_a))
-    
-    theta1 = atan2(wy, wx)
-    theta2 = (pi/2) - alpha - atan2(s, r)
-    theta3 = (pi/2) - beta - atan2(-a_3, d_4)
+    # Angle a (alpha)
+    a = acos((C**2 + B**2 - A**2) / (2 * C * B))
+    # Calculating theta 2
+    theta2 = (pi/2) - a - atan2((wz - d_1), r)
+    # Angle b (beta)
+    b = acos((C**2 + A**2 - B**2) / (2 * C * A))
+    # Calculating theta 3
+    theta3 = (pi/2) - b - atan2(-a_3, d_4)
     
     # Calculating Euler angles from orientation
-    # Calculating theta 4 to 6
     R0_3 = HT0_1[0:3, 0:3] * HT1_2[0:3, 0:3] * HT2_3[0:3, 0:3]
     R0_3 = R0_3.evalf(subs={'q1': theta1, 'q2': theta2, 'q3': theta3})
-    R3_6 = R0_3.HT * rot_rpy
+    # Calculate inverse of R0_3
+    R3_6 = R0_3.inv("LU") * rot_rpy
     
+    # Calculating theta 4
+    theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
+    # Calculating theta 5
     theta5 = atan2(sqrt(R3_6[0, 2]**2 + R3_6[2, 2]**2), R3_6[1, 2])
-    # Choosing between multiple possible solutions:
-    if sin(theta5) < 0:
-        theta4 = atan2(-R3_6[2, 2], R3_6[0, 2])
-        theta6 = atan2(R3_6[1, 1], -R3_6[1, 0])
-    else:
-        theta4 = atan2(R3_6[2, 2], -R3_6[0, 2])
-        theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
+    # Calculating theta 6
+    theta6 = atan2(-R3_6[1, 1], R3_6[1, 0])
+    
     ##
     ##
     ########################################################################################
