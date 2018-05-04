@@ -38,9 +38,6 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image28]: ./misc_images/ik_equations2.png "IK Equations2"
 [image29]: ./misc_images/ik_equations3.png "IK Equations3"
 [image30]: ./misc_images/ik_equations4.png "IK Equations4"
-[image31]: ./misc_images/for2.gif "Theta 2"
-[image32]: ./misc_images/for3.gif "radio"
-[image33]: ./misc_images/for4.gif "s"
 
 #### How build the project
 
@@ -252,21 +249,12 @@ Once the wrist center (WC) is known we can calculate the first joint angle with 
 
 The point zc could be considered to be the wrist center of a spherical wrist. We will assume that the Cartesian coordinates of zc have already been calculated. To find 𝜃1, we need to project zc onto the ground plane - a trivial task since it only requires setting the z-coordinate = 0! Thus,
 
-![alt text][image5]
+𝜃1 = atan2(wy, wx)
 
-To solve for 𝜃2, imagine 𝜃1 = 0 and project links 2 and 3 onto the the x-z plane. Again, we use the atan2 function,
+Where:
 
-![alt text][image31]
-
-where,
-
-![alt text][image32]
-
-and,
-
-![alt text][image33]
-
-Where: s = wz - d_1
+r = sqrt(wx**2 + wy**2) - a_1
+s = wz - d_1
 
 With the help of the Law of Cosines I've calculated the values for angles alpha and bet.
 
