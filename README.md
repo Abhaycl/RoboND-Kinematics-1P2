@@ -43,6 +43,10 @@ The objective of this project is to program the robotic arm to pick up an elemen
 [image33]: ./misc_images/img3.png "10 object image"
 [image34]: ./misc_images/img4.png "10 object image"
 [image35]: ./misc_images/img5.png "10 object image"
+[image36]: ./misc_images/img6.png "10 object image"
+[image37]: ./misc_images/img7.png "10 object image"
+[image38]: ./misc_images/img8.png "10 object image"
+[image39]: ./misc_images/img9.png "10 object image"
 
 #### How build the project
 
@@ -365,6 +369,10 @@ Possibly, due to computer performance, it was rather slow still and while I trie
 ![alt text][image33]
 ![alt text][image34]
 ![alt text][image35]
+![alt text][image36]
+![alt text][image37]
+![alt text][image38]
+![alt text][image39]
 
 ### Observations, possible improvements, things used
 
